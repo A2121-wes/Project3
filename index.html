@@ -1,137 +1,119 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Project 3 · Nutrition Monitor</title>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#06aaa6">
+<title>BoilerBite — Smart Dining</title>
 <style>
-:root{font-family:system-ui,-apple-system,sans-serif;color:#e8eef8;background:#101827;color-scheme:dark}
-*{box-sizing:border-box}body{margin:0;padding:16px}main{max-width:820px;margin:auto}h1{font-size:1.65rem;margin-bottom:.25em}h2{font-size:1.1rem}small,.muted{color:#aab9d2}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}section{background:#1b293e;padding:17px;margin:14px 0;border:1px solid #354761;border-radius:14px}label{display:block;font-size:.93rem;margin:9px 0}input,select,button{font:inherit;border-radius:8px;max-width:100%}input,select{display:block;padding:10px;background:#101c2e;color:#fff;border:1px solid #52647d;width:100%;margin-top:4px}button{padding:10px 13px;border:1px solid #6884aa;background:#324b70;color:#fff;cursor:pointer;margin:4px 6px 4px 0}button:hover{background:#3c5c8b}button.primary{background:#165caa;border-color:#2274d0}button:disabled{opacity:.5;cursor:not-allowed}.stat{border-radius:10px;background:#26374f;padding:12px}.stat b{display:block;font-size:1.25rem;margin-top:5px}.tag{display:inline-block;border-radius:5px;padding:4px 8px;margin:3px;background:#37465e}.warning{color:#ffcc91}table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{border-bottom:1px solid #3b4a60;text-align:left;padding:8px 4px}#status{color:#b8e7cf}pre{white-space:pre-wrap;word-break:break-word;background:#101c2e;padding:10px;border-radius:8px;max-height:120px;overflow:auto}@media(max-width:600px){.grid{grid-template-columns:1fr}table{font-size:.78rem}}
-</style></head><body><main>
-<h1>Purdue Nutrition Monitor</h1><div class="muted">Project 3 demo · micro:bit Bluetooth + Purdue daily-menu CSV + local serving history</div>
-<section><h2>1. Choose an anonymous user</h2>
-<label>Session/User ID <input id="userId" placeholder="e.g. 1001" value="1001" maxlength="30"></label>
-<small>The chosen ID determines which records you view. This prototype is not a secure login system.</small></section>
-<section><h2>2. Load your Purdue menu</h2>
-<label>Choose CSV created by <code>purdue_dining_daily.py --once</code><input id="file" type="file" accept=".csv,text/csv"></label>
-<div id="menuStatus" class="muted">No menu loaded. You can still try a manual weight reading, but logging needs a menu item.</div>
-<label>Food item <select id="food"><option value="">Load a menu CSV first</option></select></label>
-<div class="grid"><label>Grams per published serving <input id="gramsPerServing" type="number" min="0.1" step="any" placeholder="e.g. 140"></label>
-<label>Verified dietary labels (optional) <input id="tags" placeholder="e.g. Vegetarian; Contains milk"></label></div>
-<p class="muted" id="servingLabel">Enter the weight in grams of the Purdue menu's published serving. A label like “1 cup” is not enough without a gram conversion.</p>
-<div class="muted" id="ingredients"></div>
+:root{--teal:#09b6ad;--teal2:#0a989b;--ink:#192941;--muted:#718195;--line:#e7edf1;--paper:#f6f9fb;--white:#fff;--pale:#eaf8f6;--gold:#ffb75e;--blue:#628be9;--rose:#f07889;--shadow:0 10px 36px rgba(29,73,97,.07);font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink);background:var(--paper)}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #91dad5;outline-offset:2px}.shell{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}.sidebar{background:#fff;border-right:1px solid var(--line);padding:29px 17px;position:sticky;top:0;height:100vh}.logo{display:flex;gap:11px;align-items:center;font-weight:850;font-size:1.34rem;letter-spacing:-.7px;padding:2px 10px 27px}.logo i{height:39px;width:39px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,var(--teal),#57d5c7);font-size:22px;color:#fff;font-style:normal}.navlabel{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:#9da9b7;font-weight:800;padding:17px 14px 10px}.nav{padding:13px 14px;display:flex;gap:10px;align-items:center;color:#8290a0;border-radius:13px;margin:3px 0;font-weight:650;font-size:.92rem}.nav.active{background:#e9faf7;color:#078e88}.sidebarfoot{position:absolute;bottom:28px;left:25px;right:20px;border-top:1px solid var(--line);padding-top:20px;color:#8290a0;font-size:.74rem;line-height:1.7}.main{min-width:0}.topbar{display:flex;justify-content:space-between;align-items:center;padding:24px clamp(18px,4.7vw,64px);background:white;border-bottom:1px solid var(--line)}.eyebrow{font-size:12px;font-weight:750;color:var(--teal2);letter-spacing:.8px;text-transform:uppercase}.topbar h1{font-size:clamp(1.3rem,2.7vw,2rem);letter-spacing:-1px;margin:4px 0}.statuschip{font-size:12px;border-radius:30px;background:#f3f6f8;border:1px solid var(--line);padding:9px 13px;white-space:nowrap;color:#7f8c9b}.statuschip.good{background:#e8f9f1;color:#208c62}.content{max-width:1320px;margin:0 auto;padding:25px clamp(18px,4.7vw,64px) 55px}.hero{display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;border-radius:22px;background:linear-gradient(115deg,#09a9aa,#36cdb7);color:#fff;padding:26px 29px;box-shadow:0 20px 38px rgba(16,173,161,.14);margin-bottom:22px}.hero h2{font-size:1.7rem;margin:7px 0 7px;letter-spacing:-.7px}.hero p{margin:0;color:#e6fffb;font-size:.9rem;line-height:1.5}.hero span{font-size:11px;text-transform:uppercase;letter-spacing:2px;opacity:.85;font-weight:800}.idfield{display:flex;align-items:center;gap:9px;background:#ffffff28;border:1px solid #ffffff66;border-radius:15px;padding:11px 15px}.idfield label{font-size:11px;opacity:.88;white-space:nowrap}.idfield input{background:transparent;color:#fff;border:0;font-weight:800;font-size:1.1rem;width:98px;min-width:70px}.idfield input::placeholder{color:#d0f8f0}.dashboard{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:19px}.stack{display:grid;gap:19px;align-content:start}.panel{background:#fff;border:1px solid #e9eef1;border-radius:19px;box-shadow:var(--shadow);padding:22px;min-width:0}.panelhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.panel h3{font-size:1.05rem;margin:0;letter-spacing:-.25px}.subtle{font-size:.79rem;color:var(--muted);line-height:1.5}.mini{font-size:.7rem}.muted{color:var(--muted)}.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.metric{background:#f6f9fa;border-radius:14px;padding:14px 13px;min-width:0}.metric .dot{display:inline-block;width:8px;height:8px;border-radius:100%;margin-right:5px}.metric .name{font-size:.72rem;color:#6c7c8d}.metric strong{display:block;font-size:clamp(1.25rem,2.1vw,1.8rem);letter-spacing:-.8px;margin:10px 0 1px}.metric small{font-size:.7rem;color:#9ba7b3}.macrobar{display:flex;height:10px;border-radius:30px;overflow:hidden;background:#ecf1f4;margin-top:19px;gap:3px}.macrobar i{transition:width .2s}.field{display:block;font-size:.79rem;font-weight:680;color:#647588;margin:10px 0}.field input,.field select,.field textarea{background:#f8fafb;border:1px solid #dfe8ed;border-radius:11px;width:100%;margin-top:7px;padding:11px 12px;color:#233c52;font-weight:500}.field select{max-width:100%}.fields2{display:grid;grid-template-columns:1fr 1fr;gap:11px}.btn{border-radius:11px;border:1px solid #d9e7e9;background:#fff;color:#357777;font-weight:750;font-size:.82rem;padding:11px 14px}.btn:hover{filter:brightness(.97)}.btn.primary{background:var(--teal2);color:#fff;border-color:transparent}.btn.dark{background:var(--ink);color:white;border:0}.btn.ghost{color:#718195}.actions{display:flex;gap:8px;flex-wrap:wrap}.banner{background:#eef9f8;border:1px solid #d8f1ee;color:#348782;border-radius:12px;padding:11px 13px;font-size:.8rem;line-height:1.45}.banner.warn{background:#fff7e9;border-color:#fbe5bd;color:#966622}.banner.error{background:#fff0ef;border-color:#f7d3ce;color:#b55248}.tags{display:flex;flex-wrap:wrap;gap:6px}.tag{display:inline-block;border-radius:30px;background:#f1f6f9;color:#667e8c;font-size:.72rem;padding:5px 9px}.tag.green{background:#e7f8ed;color:#16865c}.tag.amber{background:#fff5e2;color:#9c7219}.lined{border-top:1px solid var(--line);padding-top:13px;margin-top:13px}.tabs{display:flex;gap:5px;background:#f2f6f7;padding:4px;border-radius:12px;margin-bottom:10px}.tabs button{flex:1;background:transparent;border:0;color:#8291a0;padding:9px 5px;border-radius:9px;font-size:.78rem;font-weight:730}.tabs button.active{color:#078c86;background:white;box-shadow:0 3px 10px #dce7e9}.tinyline{font-size:.78rem;color:#728397;margin-top:10px;line-height:1.5}.hidden{display:none!important}.badge{display:inline-block;padding:5px 9px;border-radius:99px;background:#eaf9f2;color:#1b916a;font-size:.72rem;font-weight:740}.servingitem{display:flex;gap:11px;padding:13px 0;border-bottom:1px solid #eef2f4}.servingitem:last-child{border:0}.foodicon{width:38px;height:38px;border-radius:12px;background:#e7f7f4;display:grid;place-items:center;font-size:20px;flex-shrink:0}.servingitem strong{font-size:.84rem;display:block}.servingitem small{color:var(--muted);font-size:.73rem}.servingitem .right{margin-left:auto;text-align:right;white-space:nowrap;font-size:.8rem}.chart{display:flex;align-items:end;gap:12px;height:144px;margin:17px 0 7px;padding-top:14px;border-bottom:1px solid #e8eef0}.barcol{flex:1;height:100%;display:flex;align-items:center;justify-content:end;flex-direction:column;gap:7px}.bar{width:min(27px,72%);border-radius:7px 7px 0 0;background:linear-gradient(180deg,#50d5c3,#11afa9);min-height:3px}.barcol small{font-size:.68rem;color:#91a0ad}.statline{display:flex;justify-content:space-between;gap:12px;margin:10px 0;font-size:.8rem}.statline b{font-size:.78rem}.live{font-size:2.8rem;font-weight:850;letter-spacing:-2px;color:#0b9995;margin:5px 0}.live small{font-size:1rem;letter-spacing:0;color:#7a93a0}.reading{font-family:ui-monospace,monospace;font-size:.74rem;background:#142b3d;color:#c2eee8;border-radius:10px;padding:11px;margin-top:11px;max-height:83px;overflow:auto;white-space:pre-wrap;word-break:break-all}.footer{color:#899ba9;font-size:.73rem;line-height:1.55;margin-top:17px}.goodtext{color:#15a17b}.count{background:#e6f8f5;color:#149d94;border-radius:100px;padding:5px 9px;font-size:.73rem;font-weight:800}#navmobile{display:none}details summary{cursor:pointer;font-size:.82rem;color:#637e8c}details p{font-size:.75rem;line-height:1.6;color:#7c8b9a;word-break:break-word}@media(max-width:1070px){.shell{grid-template-columns:72px minmax(0,1fr)}.sidebar{padding:20px 9px}.logo{padding:3px 2px 25px;justify-content:center}.logo span,.nav span,.navlabel,.sidebarfoot{display:none}.nav{justify-content:center;padding:13px 4px}.dashboard{grid-template-columns:minmax(0,1.3fr) minmax(270px,1fr)}.grid4{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.shell{display:block}.sidebar{display:none}.topbar{padding:20px 19px}.content{padding:18px 15px 90px}.hero{grid-template-columns:1fr;padding:23px}.hero h2{font-size:1.5rem}.idfield{width:max-content}.dashboard{grid-template-columns:1fr}.panel{padding:19px}.grid4{grid-template-columns:repeat(2,1fr)}#navmobile{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:5;background:#fff;border-top:1px solid #e8edef;padding:10px 0 max(11px,env(safe-area-inset-bottom));justify-content:space-around}#navmobile a{text-decoration:none;text-align:center;font-size:.68rem;color:#8291a0}#navmobile b{display:block;font-size:1.1rem;padding-bottom:3px}#navmobile a:first-child{color:var(--teal2)}}@media(max-width:385px){.fields2{grid-template-columns:1fr}.metric{padding:11px 9px}.metric strong{font-size:1.26rem}}
+</style>
+</head>
+<body><div class="shell">
+<aside class="sidebar"><div class="logo"><i>✳</i><span>BoilerBite</span></div><div class="navlabel">Your workspace</div><div class="nav active">▦ <span>Dashboard</span></div><a class="nav" style="text-decoration:none" href="#station">◫ <span>Serving station</span></a><a class="nav" style="text-decoration:none" href="#history">▤ <span>Meal history</span></a><a class="nav" style="text-decoration:none" href="#setup">⚙ <span>Connections</span></a><div class="sidebarfoot">Purdue • ENGR 13000<br>Team 21 · Project 3<br>Prototype — not medical advice</div></aside>
+<div class="main"><header class="topbar"><div><div class="eyebrow">Smart dining companion</div><h1>Nutrition dashboard</h1></div><div class="statuschip" id="statusChip">● Disconnected</div></header>
+<main class="content"><div class="hero"><div><span>Welcome to your dashboard</span><h2>Eat well. Know your numbers.</h2><p>Live tray measurements, Purdue menu nutrition, and your serving history in one place.</p></div><div class="idfield"><label for="userId">SESSION ID</label><input id="userId" value="1001" maxlength="32" aria-label="Anonymous user ID"></div></div>
+<div class="dashboard"><div class="stack">
+<section class="panel" id="overview"><div class="panelhead"><h3>Today's nutrition</h3><span class="count" id="todayCount">0 servings</span></div><div class="grid4" id="metrics"><div class="metric">Loading...</div></div><div id="macrobar" class="macrobar"></div><div class="subtle" style="margin-top:11px">Only servings logged under this ID today. Estimates depend on the published serving conversion.</div></section>
+<section class="panel" id="station"><div class="panelhead"><h3>Choose your meal</h3><span class="badge" id="menuBadge">Menu not loaded</span></div><div class="banner" id="menuStatus">Loading Purdue dining menu…</div><div class="fields2"><label class="field">Meal<select id="meal"><option value="">All meals</option></select></label><label class="field">Station<select id="stationFilter"><option value="">All stations</option></select></label></div><label class="field">Food item<input id="foodSearch" placeholder="Search chicken, rice, oatmeal…" autocomplete="off"><select id="food" size="1"><option>Loading menu…</option></select></label><div class="fields2"><div class="field">Published serving<div id="published" style="margin-top:7px;font-weight:850;color:#188c8b;font-size:1.03rem">—</div></div><div class="field">Per published serving<div id="publishedKcal" style="margin-top:7px;font-weight:850;font-size:1.03rem">—</div></div></div><div class="tags" id="foodTags"></div><details class="lined"><summary>Published ingredients and nutrition information</summary><p id="ingredients">Select a food.</p></details>
+<div class="lined"><div class="tabs"><button class="active" id="manualTab">Enter cups / pieces / servings</button><button id="scaleTab">Measure with scale</button></div>
+<div id="manualPane"><div class="fields2"><label class="field">Amount eaten<input id="portionAmount" type="number" min="0.01" step="any" value="1"></label><label class="field">Unit<input id="portionUnit" readonly value="serving"></label></div><p class="tinyline" id="portionHint">Units will match the selected food's published serving.</p><button class="btn primary" id="logPortion">＋ Log serving</button></div>
+<div id="scalePane" class="hidden"><div class="fields2"><label class="field">Grams for one published serving<input id="gramsPerServing" type="number" min="0.01" step="any" placeholder="Needed for cups/pieces"></label><label class="field">Current serving measured (g)<input id="scaleGrams" type="number" min="0" step="any" placeholder="From sensor"></label></div><div class="banner warn" id="calibrationHint">For a cup or piece, weigh one published serving once, then enter its grams. This is saved for this food.</div><div class="actions"><button class="btn primary" id="logGrams">＋ Log measured serving</button><button class="btn" id="useDrop">Use tray weight drop</button></div></div></div>
+<div class="lined"><div class="subtle" id="calcPreview">Select a food to preview nutrition.</div></div>
 </section>
-<section><h2>3. Connect micro:bit Bluetooth</h2>
-<p class="muted">MakeCode Bluetooth UART service must be enabled on the physical micro:bit. The micro:bit sends lines such as <code>S,150</code> when food is removed.</p>
-<button class="primary" id="connect">Connect micro:bit</button><button id="disconnect">Disconnect</button>
-<div id="status">Not connected</div>
-<div class="grid"><label>Manual test weight (g)<input id="manualGrams" type="number" value="150" min="1" step="any"></label><div style="align-self:end"><button id="simulate">Test serving without hardware</button></div></div>
-<div><small>Recent BLE messages</small><pre id="messages">No messages yet.</pre></div>
-</section>
-<section><h2>4. Current user's nutrition</h2>
-<div class="grid" id="totals"><div class="stat">Calories<b>0 kcal</b></div><div class="stat">Protein<b>0 g</b></div><div class="stat">Carbs<b>0 g</b></div><div class="stat">Fat<b>0 g</b></div></div>
-<h2>Serving history</h2><div style="overflow-x:auto"><table><thead><tr><th>Time</th><th>Food</th><th>Weight</th><th>Calories</th><th>Tags</th></tr></thead><tbody id="records"><tr><td colspan="5">No servings for this ID.</td></tr></tbody></table></div>
-<button id="export">Export all logged data as CSV</button><button id="clear">Clear current ID's history</button>
-<p class="warning"><small>All data is stored locally in this browser. It will not automatically sync to other devices or survive clearing browser data. Allergens and dietary tags must be verified; ingredients alone do not prove allergen safety.</small></p>
-</section></main>
+<section class="panel" id="history"><div class="panelhead"><h3>Recent servings</h3><button class="btn ghost" id="export">↓ Export CSV</button></div><div id="records"><div class="subtle">No servings yet.</div></div><div class="actions lined"><button class="btn ghost" id="clear">Clear this ID's history</button></div></section>
+</div><div class="stack">
+<section class="panel"><div class="panelhead"><h3>Weekly overview</h3><span class="subtle">Calories / day</span></div><div id="weekChart" class="chart"></div><div class="statline"><span class="muted">Last 7 days</span><b id="weekSum">0 kcal</b></div></section>
+<section class="panel" id="setup"><div class="panelhead"><h3>Live weight sensor</h3><span class="badge" id="sensorBadge">Offline</span></div><div class="subtle">micro:bit + HX711 • Data P2, Clock P1</div><div class="live"><span id="liveWeight">—</span><small> g</small></div><div class="subtle" id="deviceStatus">Connect using Bluetooth MakeCode, or USB with your current MicroPython.</div><div class="actions" style="margin-top:12px"><button class="btn primary" id="connect">ᛒ Bluetooth</button><button class="btn" id="usb">⌁ USB serial</button><button class="btn ghost" id="disconnect">Disconnect</button></div><div class="lined"><div class="fields2"><label class="field">Before serving (g)<input id="baseline" type="number" step="any" placeholder="Take baseline"></label><label class="field">Food removed (g)<input id="drop" type="number" step="any" readonly placeholder="—"></label></div><div class="actions"><button class="btn dark" id="baselineBtn">Set tray baseline</button><button class="btn" id="demoWeight">Simulate 150 g drop</button></div><label class="field" style="display:flex;align-items:center;gap:9px"><input id="autoLog" type="checkbox" style="width:auto;margin:0"> Auto-log stable weight drops (requires food & gram conversion)</label><div class="tinyline">A detected weight decrease is the amount removed. After logging, the new reading becomes the baseline. Choose the food and ID first.</div></div><pre class="reading" id="messages">Sensor messages will appear here…</pre></section>
+<section class="panel"><div class="panelhead"><h3>Menu & data</h3><span class="badge" id="menuCount">0 foods</span></div><div class="subtle" id="menuOrigin">The website will automatically load menu.csv alongside index.html on GitHub Pages.</div><div class="actions" style="margin-top:13px"><button class="btn" id="refreshMenu">↻ Refresh menu</button><label class="btn" for="file" style="cursor:pointer">↑ Upload CSV</label><input id="file" type="file" accept=".csv,text/csv" class="hidden"></div><div class="subtle" style="margin-top:11px">Today's menu is a snapshot. GitHub Pages cannot execute the Python updater; replace menu.csv regularly or use an automated GitHub Action.</div></section>
+<section class="panel"><h3>Dietary & allergens</h3><div class="tags" style="margin-top:12px"><span class="tag amber">⚠ Check official allergen information</span><span class="tag">Ingredients available</span></div><p class="tinyline">This uploaded CSV does not include verified allergen or vegetarian/vegan fields. Ingredient text is displayed as supplied; never treat missing tags as allergen-free.</p></section>
+</div></div><p class="footer">Prototype for ENGR 13000. Nutrition is taken from published menu records and scaled using the entered amount or known weight conversion. Storage is local to this browser and ID is not authentication. For dietary restrictions, verify with Purdue Dining staff.</p></main></div></div>
+<nav id="navmobile"><a href="#overview"><b>▦</b>Overview</a><a href="#station"><b>◫</b>Log food</a><a href="#history"><b>▤</b>History</a><a href="#setup"><b>⚙</b>Sensor</a></nav>
 <script>
-"use strict";
-const $=id=>document.getElementById(id);
-const UUID_SERVICE='6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-const UUID_TX='6e400003-b5a3-f393-e0a9-e50e24dcca9e'; // micro:bit -> phone (notify)
-const STORE='project3_nutrition_servings_v1';
-const SETTINGS='project3_nutrition_settings_v1';
-let rows=[],device=null,tx=null,rxBuffer='';
-let logs=JSON.parse(localStorage.getItem(STORE)||'[]');
-let settings=JSON.parse(localStorage.getItem(SETTINGS)||'{}');
-function save(){localStorage.setItem(STORE,JSON.stringify(logs));}
-function keyFor(r){return [r['Dining Hall'],r['Meal'],r['Station'],r['Food']].join('|');}
-function getUser(){return $('userId').value.trim();}
-function csvParse(s){ // Handles quoted fields, escaped quotes, and embedded line breaks.
-  s=s.replace(/^\uFEFF/,'');let result=[],row=[],cell='',quoted=false;
-  for(let i=0;i<s.length;i++){let c=s[i];if(c==='"'){
-    if(quoted&&s[i+1]==='"'){cell+='"';i++;}else quoted=!quoted;
-  }else if(c===','&&!quoted){row.push(cell);cell='';}
-  else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&s[i+1]==='\n')i++;row.push(cell);if(row.some(v=>v!==''))result.push(row);row=[];cell='';}
-  else cell+=c;
-  }row.push(cell);if(row.some(v=>v!==''))result.push(row);
-  if(!result.length)return [];
-  const header=result.shift().map(v=>v.trim());return result.map(items=>Object.fromEntries(header.map((h,i)=>[h,items[i]??''])));
-}
-function numberValue(s){let x=String(s??'').trim().replaceAll(',','');if(!/^[+-]?\d+(?:\.\d+)?(?:\s*(?:g|mg|kcal))?$/i.test(x))return NaN;return parseFloat(x);}
-function currentFood(){return rows[Number($('food').value)];}
-function selectFood(){const r=currentFood();if(!r)return;
-  const cfg=settings[keyFor(r)]||{};
-  $('gramsPerServing').value=cfg.grams||'';
-  $('tags').value=cfg.tags||'';
-  $('servingLabel').textContent='Published serving size: '+(r['Serving Size']||'not specified')+' — enter the grams in THAT serving (do not assume values are per 100 g).';
-  $('ingredients').textContent='Ingredients from Purdue data: '+(r['Ingredients']||'unavailable');
-}
-function saveFoodSettings(){let r=currentFood();if(!r)return;
-  settings[keyFor(r)]={grams:$('gramsPerServing').value,tags:$('tags').value};
-  localStorage.setItem(SETTINGS,JSON.stringify(settings));
-}
-$('file').addEventListener('change',async e=>{
-  const f=e.target.files[0];if(!f)return;
-  try{rows=csvParse(await f.text()).filter(x=>x['Food']);
-    $('food').replaceChildren();rows.forEach((r,i)=>{const opt=document.createElement('option');opt.value=i;opt.textContent=[r['Meal'],r['Station'],r['Food']].filter(Boolean).join(' / ');$('food').appendChild(opt)});
-    $('menuStatus').textContent=`Loaded ${rows.length} food items from ${f.name}`;selectFood();
-  }catch(err){$('menuStatus').textContent='CSV error: '+err.message;}
-});
-$('food').addEventListener('change',selectFood);
-$('gramsPerServing').addEventListener('change',saveFoodSettings);
-$('tags').addEventListener('change',saveFoodSettings);
-function message(s){const old=$('messages').textContent==='No messages yet.'?'':$('messages').textContent;
-  $('messages').textContent=(s+'\n'+old).slice(0,1400);
-}
-function record(grams,source='manual'){
-  const id=getUser(),r=currentFood(),portion=Number($('gramsPerServing').value);
-  if(!id){alert('Enter a user ID first.');return;}
-  if(!r){alert('Import your daily menu and choose a food first.');return;}
-  if(!Number.isFinite(grams)||grams<=0){alert('Invalid measured weight.');return;}
-  if(!Number.isFinite(portion)||portion<=0){alert('Enter grams per published serving for this food.');return;}
-  const factor=grams/portion,labels={calories:'Calories (kcal)',protein:'Protein (g)',carbs:'Carbs (g)',fat:'Fat (g)'};
-  let values={};for(let [k,column] of Object.entries(labels)){
-    let val=numberValue(r[column]);if(!Number.isFinite(val)){alert(`Missing/unclear ${column} for ${r['Food']}. Choose another food or obtain verified nutrition data.`);return;}
-    values[k]=Math.round(val*factor*100)/100;
-  }
-  const item={id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random(),timestamp:new Date().toISOString(),user_id:id,
-    hall:r['Dining Hall']||'',meal:r['Meal']||'',station:r['Station']||'',food:r['Food'],grams,portion_g:portion,
-    ...values,tags:$('tags').value.trim(),source};
-  logs.push(item);save();saveFoodSettings();render();message(`Logged ${grams} g ${item.food} for user ${id}`);
-}
-function handleLine(line){message('BLE: '+line);let m=line.trim().match(/^S,(?:\d+,)?(\d+(?:\.\d+)?)$/i);
-  if(m) record(Number(m[1]),'bluetooth');
-}
-function bleNotification(event){const value=event.target.value;rxBuffer+=new TextDecoder().decode(value);
-  if(rxBuffer.length>1000){rxBuffer='';message('Discarded oversized BLE buffer');return;}
-  while(rxBuffer.includes('\n')){const i=rxBuffer.indexOf('\n');const line=rxBuffer.slice(0,i).replace(/\r$/,'');rxBuffer=rxBuffer.slice(i+1);if(line)handleLine(line);}
-}
-function disconnected(){$('status').textContent='Bluetooth disconnected';tx=null;rxBuffer='';}
-$('connect').addEventListener('click',async()=>{
-  if(!navigator.bluetooth){alert('Web Bluetooth unavailable. Use Chrome on Android or Chrome on Mac, served over HTTPS or localhost. iPhone Safari does not support Web Bluetooth.');return;}
-  try{
-    device=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'BBC micro:bit'}],optionalServices:[UUID_SERVICE]});
-    device.addEventListener('gattserverdisconnected',disconnected);
-    const server=await device.gatt.connect(),service=await server.getPrimaryService(UUID_SERVICE);
-    tx=await service.getCharacteristic(UUID_TX);await tx.startNotifications();tx.addEventListener('characteristicvaluechanged',bleNotification);
-    $('status').textContent='Connected to '+(device.name||'micro:bit');message('Connected');
-  }catch(err){$('status').textContent='Bluetooth connection failed: '+err.message;}
-});
-$('disconnect').addEventListener('click',()=>{if(device&&device.gatt.connected)device.gatt.disconnect();disconnected();});
-$('simulate').addEventListener('click',()=>record(Number($('manualGrams').value),'simulation'));
-function format(n){return (Math.round(n*10)/10).toLocaleString();}
-function render(){const id=getUser(),mine=logs.filter(x=>x.user_id===id).sort((a,b)=>b.timestamp.localeCompare(a.timestamp));
-  const stats=['calories','protein','carbs','fat'];$('totals').replaceChildren();for(let stat of stats){const el=document.createElement('div');el.className='stat';
-    const label=document.createTextNode(stat==='calories'?'Calories':stat[0].toUpperCase()+stat.slice(1));const b=document.createElement('b');b.textContent=format(mine.reduce((s,x)=>s+(Number(x[stat])||0),0))+(stat==='calories'?' kcal':' g');el.append(label,b);$('totals').appendChild(el);}
-  $('records').replaceChildren();if(!mine.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=5;td.textContent='No servings for this ID.';tr.append(td);$('records').append(tr)}
-  for(const r of mine){const tr=document.createElement('tr');for(const val of [new Date(r.timestamp).toLocaleString(),r.food,format(r.grams)+' g',format(r.calories)+' kcal',r.tags||'—']){const td=document.createElement('td');td.textContent=val;tr.append(td)}$('records').append(tr)}
-}
-$('userId').addEventListener('input',render);
-function csvEscape(v){let s=String(v??'');return /[",\r\n]/.test(s)?'"'+s.replaceAll('"','""')+'"':s;}
-$('export').addEventListener('click',()=>{
-  const columns=['timestamp','user_id','hall','meal','station','food','grams','portion_g','calories','protein','carbs','fat','tags','source'];
-  const data=[columns.join(','),...logs.map(item=>columns.map(k=>csvEscape(item[k])).join(','))].join('\r\n');
-  const blob=new Blob([data],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');
-  link.href=url;link.download='project3_serving_logs.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),3000);
-});
-$('clear').addEventListener('click',()=>{if(confirm('Delete all local servings for user '+getUser()+'?')){logs=logs.filter(x=>x.user_id!==getUser());save();render()}});
-render();
-</script></body></html>
+'use strict';
+const $=id=>document.getElementById(id), STORE='boilerbite_logs_v2', CAL='boilerbite_calibration_v2';
+const BLE_SERVICE='6e400001-b5a3-f393-e0a9-e50e24dcca9e', BLE_TX='6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+let menu=[],filtered=[],logs=safeRead(STORE,[]),cal=safeRead(CAL,{}),device=null,serialPort=null,serialReader=null,tx=null,buf='',mode='manual',live=null,previousLive=null,lastReadingAt=0,stableSince=0,stableCenter=null,autoBusy=false,lastAutoAt=0,connection='offline';
+function safeRead(k,def){try{return JSON.parse(localStorage.getItem(k)||'null')??def}catch{return def}}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function msg(s){const p=$('messages');p.textContent=('['+new Date().toLocaleTimeString()+'] '+s+'\n'+(p.textContent.includes('Sensor messages will appear')?'':p.textContent)).slice(0,1050)}
+function number(s){const t=String(s??'').replaceAll(',','').trim();if(!/^[-+]?\d+(?:\.\d+)?$/.test(t))return NaN;return Number(t)}
+function fmt(v,n=1){return Number(v||0).toLocaleString(undefined,{maximumFractionDigits:n})}
+function csvParse(text){let a=[],line=[],field='',quoted=false;text=text.replace(/^\uFEFF/,'');for(let i=0;i<text.length;i++){let c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){field+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){line.push(field);field=''}else if((c==='\r'||c==='\n')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;line.push(field);if(line.some(z=>z.trim()))a.push(line);line=[];field=''}else field+=c}line.push(field);if(line.some(z=>z.trim()))a.push(line);const head=(a.shift()||[]).map(x=>x.trim());return a.map(row=>Object.fromEntries(head.map((h,i)=>[h,row[i]??''])))}
+function key(r){return ['Date','Dining Hall','Meal','Station','Food','Serving Size'].map(k=>r[k]||'').join('|')}
+function saveCal(r,grams){if(!r)return;cal[key(r)]=String(grams||'');save(CAL,cal)}
+function parseQty(s){s=s.trim();let m=s.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)/);if(m)return {q:+m[1]+(+m[2]/+m[3]),rest:s.slice(m[0].length).trim()};m=s.match(/^(\d+)\s*\/\s*(\d+)/);if(m)return {q:+m[1]/+m[2],rest:s.slice(m[0].length).trim()};m=s.match(/^(\d+(?:\.\d+)?)(?![x×\d])/);if(m)return {q:+m[1],rest:s.slice(m[0].length).trim()};return {q:1,rest:s}}
+function serving(r){const raw=String(r?.['Serving Size']||'').trim();if(!raw)return {raw:'Unspecified',qty:1,unit:'published serving',grams:null,valid:false};let {q,rest}=parseQty(raw);let s=rest.toLowerCase().replace(/\bservings?\b/g,'').trim();let unit='published serving',grams=null,known=true;
+if(/\b(cups?|c\.)\b/.test(s))unit='cup';
+else if(/\btablespoons?\b|\btbsp\b/.test(s))unit='tablespoon';
+else if(/\bteaspoons?\b|\btsp\b/.test(s))unit='teaspoon';
+else if(/\bladles?\b/.test(s))unit='ladle';
+else if(/\b(?:fl\.?\s*oz|fluid\s+ounces?)\b/.test(s))unit='fluid ounce';
+else if(/\b(?:oz|ounces?)\b/.test(s)){unit='ounce';grams=q*28.349523125}
+else if(/\b(?:grams?|g)\b/.test(s)){unit='gram';grams=q}
+else if(/\b(?:kg|kilograms?)\b/.test(s)){unit='kilogram';grams=q*1000}
+else if(/\b(?:each|piece|pieces|per)\b/.test(s))unit='piece';
+else if(/\bslices?\b/.test(s))unit='slice';
+else if(/\bbuns?\b/.test(s))unit='bun';
+else if(/\bburgers?\b/.test(s))unit='burger';
+else if(/\bmuffins?\b/.test(s))unit='muffin';
+else if(/\bbrownies?\b/.test(s))unit='brownie';
+else if(/\bcookies?\b/.test(s))unit='cookie';
+else if(/\btortillas?\b/.test(s))unit='tortilla';
+else if(/\beggs?\b/.test(s))unit='egg';
+else if(/\bbagels?\b/.test(s))unit='bagel';
+else if(/\brolls?\b/.test(s))unit='roll';
+else if(/\bchicken thighs?\b/.test(s))unit='chicken thigh';
+else if(/\bcut\b/.test(s))unit='cut serving';
+else if(s===''||s==='per')unit='published serving';
+else {unit=raw;known=false;q=1}
+// Crucially, "6 oz Ladle" is a ladle capacity, not 170 grams of food.
+if(unit==='ladle')q=1;
+// Cut labels such as 8x10 cannot be treated as 80 slices or grams.
+if(unit==='cut serving')q=1;
+return {raw,qty:q,unit,grams,valid:known};}
+function getFood(){return filtered[+$('food').value]||null}
+function foodNutrition(r){return {calories:number(r['Calories (kcal)']),protein:number(r['Protein (g)']),carbs:number(r['Carbs (g)']),fat:number(r['Fat (g)'])}}
+function hasNutrition(r){return r && ['calories','protein','carbs','fat'].every(k=>Number.isFinite(foodNutrition(r)[k]))}
+function quantityText(q,u){return fmt(q,3)+' '+u+(q!==1&&u!=='piece'?'s':'')}
+function foodChanged(){const r=getFood();if(!r)return;const p=serving(r);$('published').textContent=p.raw;$('publishedKcal').textContent=hasNutrition(r)?fmt(foodNutrition(r).calories)+' kcal':'Unavailable';$('portionAmount').value=fmt(p.qty,4);$('portionUnit').value=p.unit;$('portionHint').textContent=`Purdue nutrition is per ${p.raw}. Enter how many ${p.unit}s you actually ate; no gram conversion required.`;$('gramsPerServing').value=cal[key(r)]||p.grams||'';$('ingredients').textContent=r['Ingredients']||'Ingredients not provided.';
+$('foodTags').replaceChildren();const t=document.createElement('span');t.className='tag';t.textContent=r['Station']||'Purdue menu';$('foodTags').append(t);const other=document.createElement('span');other.className='tag amber';other.textContent='Dietary / allergen tags not supplied';$('foodTags').append(other);calibrationHint();preview();}
+function calibrationHint(){const r=getFood();if(!r)return;const p=serving(r),g=number($('gramsPerServing').value);$('calibrationHint').textContent=Number.isFinite(g)&&g>0?`Using ${fmt(g,2)} g per ${p.raw}; verify scale calibration for this food.`:`The menu lists ${p.raw}, not a gram weight. Weigh ONE ${p.raw} separately and enter its grams here; no universal cup-to-grams conversion exists.`;$('calibrationHint').className=Number.isFinite(g)&&g>0?'banner':'banner warn';}
+function menuLoaded(text,source){const raw=csvParse(text);if(!raw.length||!raw[0]['Food']||!('Serving Size' in raw[0]))throw Error('CSV requires Food and Serving Size headers');menu=raw.filter(r=>r['Food']);$('menuBadge').textContent='Menu ready';$('menuCount').textContent=menu.length+' foods';$('menuStatus').textContent=`✓ Loaded ${menu.length} foods · ${new Set(menu.map(x=>x['Date']).filter(Boolean)).size===1?menu.find(x=>x['Date'])?.['Date']+' · ':''}${source}`;$('menuStatus').className='banner';$('menuOrigin').textContent='Menu source: '+source+'. Reload a new CSV whenever the published menu changes.';
+$('meal').replaceChildren(new Option('All meals',''));Array.from(new Set(menu.map(x=>x['Meal']).filter(Boolean))).sort().forEach(x=>$('meal').add(new Option(x,x)));filterFood()}
+async function autoMenu(){try{const r=await fetch('menu.csv?date='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);menuLoaded(await r.text(),'menu.csv loaded automatically')}catch(e){$('menuBadge').textContent='Upload CSV';$('menuStatus').textContent='Could not auto-load menu.csv. Upload your Purdue CSV below. ('+e.message+')';$('menuStatus').className='banner warn'}}
+function filterFood(){const meal=$('meal').value,station=$('stationFilter').value,search=$('foodSearch').value.trim().toLowerCase();const choices=menu.filter(x=>!meal||x['Meal']===meal);$('stationFilter').replaceChildren(new Option('All stations',''));Array.from(new Set(choices.map(x=>x['Station']).filter(Boolean))).sort().forEach(x=>$('stationFilter').add(new Option(x,x)));if(station&&Array.from($('stationFilter').options).some(o=>o.value===station))$('stationFilter').value=station;
+filtered=choices.filter(x=>(!$('stationFilter').value||x['Station']===$('stationFilter').value)&&(!search||[x['Food'],x['Station'],x['Meal']].some(y=>String(y).toLowerCase().includes(search))));$('food').replaceChildren();filtered.forEach((r,i)=>$('food').add(new Option(`${r['Food']} — ${r['Station']}`,String(i))));if(filtered.length)foodChanged();else {$('published').textContent='—';$('publishedKcal').textContent='—';$('calcPreview').textContent='No matching menu items.'}}
+function changeMode(next){mode=next;$('manualTab').classList.toggle('active',next==='manual');$('scaleTab').classList.toggle('active',next==='scale');$('manualPane').classList.toggle('hidden',next!=='manual');$('scalePane').classList.toggle('hidden',next!=='scale');preview()}
+function estimate(factor){const r=getFood();if(!hasNutrition(r)||!Number.isFinite(factor)||factor<=0)return null;let res={};for(let [k,v] of Object.entries(foodNutrition(r)))res[k]=Math.round(v*factor*100)/100;return res}
+function preview(){const r=getFood();if(!r)return;const p=serving(r);let factor= mode==='manual'?number($('portionAmount').value)/p.qty:number($('scaleGrams').value)/number($('gramsPerServing').value);let n=estimate(factor);$('calcPreview').textContent=n?`Nutrition preview: ${fmt(n.calories)} kcal · ${fmt(n.protein)} g protein · ${fmt(n.carbs)} g carbs · ${fmt(n.fat)} g fat${mode==='manual'?' (based on '+quantityText(number($('portionAmount').value),p.unit)+')':' (based on measured grams)'}`:'To calculate, select food with nutrition data and enter a valid amount / calibration.'}
+function record(factor,amount,unit,source,grams){const r=getFood(),user=$('userId').value.trim();if(!user){alert('Enter a user ID');return false}if(!r){alert('Select a food first');return false}const nutrients=estimate(factor);if(!nutrients){alert('Nutrition data or serving conversion is missing. Try a different food or valid portion.');return false}const item={key:Date.now()+'-'+Math.random().toString(36).slice(2),timestamp:new Date().toISOString(),user_id:user,food:r['Food'],meal:r['Meal'],station:r['Station'],hall:r['Dining Hall'],published:r['Serving Size'],amount,unit,grams:Number.isFinite(grams)?grams:'',...nutrients,source};logs.push(item);save(STORE,logs);render();msg('Logged '+r['Food']+' for '+user);return true}
+function logPortion(){const r=getFood();if(!r)return;const p=serving(r),amount=number($('portionAmount').value);if(!Number.isFinite(amount)||amount<=0){alert('Enter a valid quantity.');return}record(amount/p.qty,amount,p.unit,'manual',NaN)}
+function logGrams(source='measured'){const r=getFood();if(!r)return false;const g=number($('scaleGrams').value),per=number($('gramsPerServing').value);if(!(g>0)||!(per>0)){alert('Enter grams eaten AND grams in one published serving. For cups/pieces, calibrate the food once.');return false}saveCal(r,per);return record(g/per,g,'g',source,g)}
+function userLogs(todayOnly=false){const id=$('userId').value.trim(),day=new Date().toLocaleDateString();return logs.filter(x=>x.user_id===id&&(!todayOnly||new Date(x.timestamp).toLocaleDateString()===day))}
+function render(){const mine=userLogs(true),names=[['calories','Calories','#0db9ad','kcal'],['protein','Protein','#648ded','g'],['carbs','Carbs','#f4b153','g'],['fat','Fat','#f07889','g']];$('todayCount').textContent=mine.length+' serving'+(mine.length===1?'':'s');$('metrics').replaceChildren();for(let [k,l,c,u]of names){let v=mine.reduce((a,b)=>a+Number(b[k]||0),0);let d=document.createElement('div');d.className='metric';d.innerHTML=`<div class="name"><i class="dot" style="background:${c}"></i>${l}</div><strong>${fmt(v)}</strong><small>${u}</small>`;$('metrics').append(d)}let macros=names.slice(1).map(x=>[x[2],mine.reduce((n,m)=>n+Number(m[x[0]]||0),0)]),sum=macros.reduce((n,m)=>n+m[1],0)||1;$('macrobar').replaceChildren();for(const[c,n]of macros){const i=document.createElement('i');i.style.width=(100*n/sum)+'%';i.style.background=c;$('macrobar').append(i)}
+let all=userLogs().slice().reverse();$('records').replaceChildren();if(!all.length){let x=document.createElement('p');x.className='subtle';x.textContent='No servings for this ID. Choose food above and log your first serving.';$('records').append(x)}else all.slice(0,14).forEach(x=>{let row=document.createElement('div');row.className='servingitem';let ico=document.createElement('div');ico.className='foodicon';ico.textContent='🍽';let middle=document.createElement('div');let title=document.createElement('strong');title.textContent=x.food;let detail=document.createElement('small');detail.textContent=new Date(x.timestamp).toLocaleString()+' · '+fmt(x.amount,3)+' '+x.unit;middle.append(title,detail);let right=document.createElement('div');right.className='right';let c=document.createElement('strong');c.textContent=fmt(x.calories)+' kcal';right.append(c);row.append(ico,middle,right);$('records').append(row)});
+let days=[];for(let i=6;i>=0;i--){let d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);days.push({d,key:d.toDateString(),label:d.toLocaleDateString(undefined,{weekday:'short'}).slice(0,2)})}let sums=days.map(d=>all.filter(x=>new Date(x.timestamp).toDateString()===d.key).reduce((a,b)=>a+Number(b.calories||0),0));let max=Math.max(...sums,500);$('weekChart').replaceChildren();days.forEach((d,i)=>{let col=document.createElement('div');col.className='barcol';let b=document.createElement('div');b.className='bar';b.style.height=Math.max(3,Math.round(sums[i]/max*101))+'px';b.title=fmt(sums[i])+' kcal';let label=document.createElement('small');label.textContent=d.label;col.append(b,label);$('weekChart').append(col)});$('weekSum').textContent=fmt(sums.reduce((a,b)=>a+b,0))+' kcal'}
+function setConn(state,txt){connection=state;$('statusChip').textContent=(state==='connected'?'● ':'○ ')+txt;$('statusChip').classList.toggle('good',state==='connected');$('sensorBadge').textContent=state==='connected'?'Live':'Offline';$('deviceStatus').textContent=txt}
+function setWeight(v,source){if(!Number.isFinite(v)||Math.abs(v)>1e7)return;previousLive=live;live=v;lastReadingAt=Date.now();$('liveWeight').textContent=fmt(v,1);const base=number($('baseline').value);let drop=Number.isFinite(base)?base-v:NaN;$('drop').value=Number.isFinite(drop)?fmt(Math.max(0,drop),1):'';if(Number.isFinite(drop)&&drop>0){$('scaleGrams').value=fmt(drop,1);if(mode==='scale')preview()}
+if(stableCenter===null||Math.abs(v-stableCenter)>2){stableCenter=v;stableSince=Date.now()}else stableCenter=.65*stableCenter+.35*v;
+if($('autoLog').checked&&drop>=8&&Date.now()-stableSince>=1100&&Date.now()-lastAutoAt>2500&&!autoBusy){autoBusy=true;let r=getFood(),per=number($('gramsPerServing').value);if(r&&per>0&&hasNutrition(r)){const g=+drop.toFixed(1);$('scaleGrams').value=g;if(logGrams('auto-'+source)){$('baseline').value=fmt(v,1);$('drop').value='';lastAutoAt=Date.now();msg('Auto-logged stable drop '+g+'g')}}else{msg('Auto-log paused: select food and calibrate grams per serving.');lastAutoAt=Date.now()}autoBusy=false}}
+function incoming(line,source){line=String(line).trim();if(!line)return;msg(source+': '+line);let m=line.match(/^W,\s*([-+]?\d+(?:\.\d+)?)/i);if(m){setWeight(+m[1],source);return}m=line.match(/^S,\s*(?:\d+,)?([-+]?\d+(?:\.\d+)?)/i);if(m){$('scaleGrams').value=+m[1];if(mode==='scale')preview();msg('Received serving '+m[1]+' g. Click Log measured serving.');return}m=line.match(/weight\s*=\s*([-+]?\d+(?:\.\d+)?)\s*g/i);if(m){setWeight(+m[1],source);return}}
+function feed(chunk,source){buf+=chunk;if(buf.length>2000)buf=buf.slice(-1000);while(buf.includes('\n')){let i=buf.indexOf('\n'),line=buf.slice(0,i).replace(/\r/g,'');buf=buf.slice(i+1);incoming(line,source)}}
+function bleNotify(event){feed(new TextDecoder().decode(event.target.value),'Bluetooth')}
+async function bleConnect(){if(!navigator.bluetooth){alert('Use Chrome/Edge on Mac or Android over HTTPS. iPhone Safari does not support Web Bluetooth.');return}try{setConn('connecting','Scanning for micro:bit...');device=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:[BLE_SERVICE]});device.addEventListener('gattserverdisconnected',()=>setConn('offline','Bluetooth disconnected'));const server=await device.gatt.connect();const service=await server.getPrimaryService(BLE_SERVICE);tx=await service.getCharacteristic(BLE_TX);await tx.startNotifications();tx.addEventListener('characteristicvaluechanged',bleNotify);setConn('connected','Bluetooth connected to '+(device.name||'micro:bit'));msg('BLE connected')}catch(e){setConn('offline','Bluetooth error: '+e.message);msg(e.name+': '+e.message)}}
+async function serialConnect(){if(!('serial'in navigator)){alert('USB serial requires desktop Chrome or Edge (HTTPS or localhost).');return}try{serialPort=await navigator.serial.requestPort();await serialPort.open({baudRate:115200});setConn('connected','USB serial connected');msg('USB connected — reading MicroPython prints');serialLoop(serialPort)}catch(e){setConn('offline','USB error: '+e.message)}}
+async function serialLoop(port){const decoder=new TextDecoder();try{while(port.readable){serialReader=port.readable.getReader();try{while(true){const {value,done}=await serialReader.read();if(done)break;feed(decoder.decode(value,{stream:true}),'USB')}}finally{serialReader.releaseLock();serialReader=null}break}}catch(e){msg('USB: '+e.message)}finally{if(serialPort===port){setConn('offline','USB disconnected');try{await port.close()}catch{}serialPort=null}}}
+async function disconnect(){if(device?.gatt?.connected)device.gatt.disconnect();if(serialReader)try{await serialReader.cancel()}catch{}setConn('offline','Disconnected')}
+$('connect').addEventListener('click',bleConnect);$('usb').addEventListener('click',serialConnect);$('disconnect').addEventListener('click',disconnect);
+$('baselineBtn').addEventListener('click',()=>{if(live===null){alert('Connect or simulate a weight first');return}$('baseline').value=fmt(live,2);$('drop').value='';stableSince=Date.now();msg('Tray baseline set: '+fmt(live)+' g')});
+$('demoWeight').addEventListener('click',()=>{if(live===null){setWeight(1000,'demo');$('baseline').value='1000';msg('Demo tray initial weight: 1000 g')}setWeight(number($('baseline').value)-150,'demo');msg('Simulated 150 g removed — check the measured portion')});
+$('manualTab').addEventListener('click',()=>changeMode('manual'));$('scaleTab').addEventListener('click',()=>changeMode('scale'));$('logPortion').addEventListener('click',logPortion);$('logGrams').addEventListener('click',()=>logGrams());$('useDrop').addEventListener('click',()=>{let d=number($('drop').value);if(d>0){$('scaleGrams').value=d;preview()}else alert('First set a baseline and remove food.')});
+$('gramsPerServing').addEventListener('input',()=>{calibrationHint();preview()});$('gramsPerServing').addEventListener('change',()=>saveCal(getFood(),number($('gramsPerServing').value)));$('scaleGrams').addEventListener('input',preview);$('portionAmount').addEventListener('input',preview);
+$('meal').addEventListener('change',()=>{$('stationFilter').value='';filterFood()});$('stationFilter').addEventListener('change',filterFood);$('foodSearch').addEventListener('input',filterFood);$('food').addEventListener('change',foodChanged);$('userId').addEventListener('input',render);
+$('file').addEventListener('change',async(e)=>{const f=e.target.files?.[0];if(f)try{menuLoaded(await f.text(),f.name)}catch(err){alert('Menu CSV error: '+err.message)}});$('refreshMenu').addEventListener('click',autoMenu);
+$('clear').addEventListener('click',()=>{let id=$('userId').value.trim();if(confirm('Delete locally saved servings for ID '+id+'?')){logs=logs.filter(x=>x.user_id!==id);save(STORE,logs);render()}});
+function quote(v){let s=String(v??'');return /[",\r\n]/.test(s)?'"'+s.replaceAll('"','""')+'"':s}
+$('export').addEventListener('click',()=>{let keys=['timestamp','user_id','food','meal','station','hall','published','amount','unit','grams','calories','protein','carbs','fat','source'];let text=[keys.join(','),...logs.map(r=>keys.map(k=>quote(r[k])).join(','))].join('\r\n');let a=document.createElement('a');let url=URL.createObjectURL(new Blob([text],{type:'text/csv'}));a.href=url;a.download='boilerbite_servings.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)});
+render();autoMenu();
+</script>
+</body></html>
